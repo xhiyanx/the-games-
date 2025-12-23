@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Word Guessing Game</title>
+</head>
+<body>
+
+<h1>🔤 Word Guessing Game</h1>
+
+<p id="wordDisplay"></p>
+<p id="triesDisplay"></p>
+
+<input type="text" id="guessInput" maxlength="1">
+<button onclick="guess()">Guess</button>
+
+<p id="message"></p>
+
+<a href="index.html">⬅ Back to Home</a>
+
+<script>
+let words = ["apple", "banana", "orange", "grape", "mango"];
+let word = words[Math.floor(Math.random() * words.length)];
+let guessed = [];
+let tries = 6;
+
+function update() {
+  let display = "";
+  for (let letter of word) {
+    display += guessed.includes(letter) ? letter : "_";
+  }
+  document.getElementById("wordDisplay").innerHTML = "Word: " + display;
+  document.getElementById("triesDisplay").innerHTML = "Tries left: " + tries;
+
+  if (!display.includes("_")) {
+    document.getElementById("message").innerHTML =
+      "🎉 You won! The word was: " + word;
+  }
+  if (tries === 0) {
+    document.getElementById("message").innerHTML =
+      "😢 Game over! The word was: " + word;
+  }
+}
+
+function guess() {
+  let input = document.getElementById("guessInput");
+  let letter = input.value.toLowerCase();
+  input.value = "";
+
+  if (!letter || guessed.includes(letter) || tries === 0) return;
+
+  guessed.push(letter);
+  if (!word.includes(letter)) {
+    tries--;
+  }
+  update();
+}
+
+update();
+</script>
+
+</body>
+</html>
