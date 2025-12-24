@@ -3,7 +3,6 @@
 <head>
   <title>My Game Website</title>
 
-  <!-- Fancy handwriting font -->
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 
   <style>
@@ -27,13 +26,6 @@
     h1 {
       font-family: 'Pacifico', cursive;
       font-size: 48px;
-      letter-spacing: 3px;
-      margin-bottom: 20px;
-    }
-
-    p {
-      font-size: 20px;
-      margin-bottom: 30px;
     }
 
     button {
@@ -51,34 +43,79 @@
       box-shadow: 0 0 20px white;
     }
 
-    .rps {
-      background-color: #00eaff;
+    .rps { background-color: #00eaff; }
+    .word { background-color: #ffd166; }
+
+    #namePrompt {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
     }
 
-    .word {
-      background-color: #ffd166;
+    #nameBox {
+      background: #0f4c75;
+      padding: 30px;
+      border-radius: 20px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: none;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="box">
-    <h1>🎮 MY GAME ZONE</h1>
-    <p>Choose a game and have fun!</p>
-
-    <a href="rockpaper.html">
-      <button class="rps">🪨 ROCK PAPER SCISSORS</button>
-    </a>
-
-    <br>
-
-    <a href="wordgame.html">
-      <button class="word">🔤 WORD GUESSING GAME</button>
-    </a>
+<div id="namePrompt">
+  <div id="nameBox">
+    <h2 style="font-family:Pacifico;">Welcome 🎮</h2>
+    <p>Enter your name</p>
+    <input id="playerNameInput" placeholder="Your name">
+    <br><br>
+    <button onclick="saveName()">Start</button>
   </div>
+</div>
+
+<div class="box">
+  <h1 id="welcome">🎮 MY GAME ZONE</h1>
+
+  <a href="rockpaper.html">
+    <button class="rps">🪨 ROCK PAPER SCISSORS</button>
+  </a>
+
+  <br>
+
+  <a href="wordgame.html">
+    <button class="word">🔤 WORD GUESSING GAME</button>
+  </a>
+</div>
+
+<script>
+  const namePrompt = document.getElementById("namePrompt");
+  const welcome = document.getElementById("welcome");
+  const savedName = localStorage.getItem("playerName");
+
+  if (savedName) {
+    namePrompt.style.display = "none";
+    welcome.innerText = `🎮 Welcome, ${savedName}!`;
+  }
+
+  function saveName() {
+    const name = document.getElementById("playerNameInput").value.trim();
+    if (!name) return;
+    localStorage.setItem("playerName", name);
+    namePrompt.style.display = "none";
+    welcome.innerText = `🎮 Welcome, ${name}!`;
+  }
+</script>
 
 </body>
 </html>
-
 
