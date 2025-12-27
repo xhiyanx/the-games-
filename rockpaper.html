@@ -1,43 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Rock Paper Scissors</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(#1f6aa5, #144c75);
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 36px;
+    }
+
+    button {
+      padding: 15px 25px;
+      margin: 15px;
+      font-size: 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 22px;
+    }
+
+    a {
+      display: block;
+      margin-top: 25px;
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+    }
+  </style>
 </head>
 <body>
 
-<h1> Rock Paper Scissors</h1>
+<h1 id="title">🪨📄✂ Rock Paper Scissors</h1>
 
-<button onclick="play('rock')">Rock</button>
-<button onclick="play('paper')">Paper</button>
-<button onclick="play('scissors')">Scissors</button>
+<button onclick="play('rock')">🪨 ROCK</button>
+<button onclick="play('paper')">📄 PAPER</button>
+<button onclick="play('scissors')">✂ SCISSORS</button>
 
-<p id="output"></p>
+<p id="result"></p>
 
-<a href="index.html">⬅ Back to Home</a>
+<a href="index.html">⬅ Home</a>
 
 <script>
-function play(user) {
-  let choices = ["rock", "paper", "scissors"];
-  let computer = choices[Math.floor(Math.random() * 3)];
+/* LOAD USER NAME */
+const userData = localStorage.getItem("userData");
+if (userData) {
+  const user = JSON.parse(userData);
+  document.getElementById("title").innerText =
+    "🪨📄✂ Rock Paper Scissors – " + user.name;
+}
+
+/* GAME LOGIC */
+function play(player) {
+  const choices = ["rock", "paper", "scissors"];
+  const computer = choices[Math.floor(Math.random() * 3)];
+
   let result = "Computer chose: " + computer + "<br>";
 
-  if (user === computer) {
-    result += "It's a tie!";
+  if (player === computer) {
+    result += "🤝 It's a tie!";
   } else if (
-    (user === "rock" && computer === "scissors") ||
-    (user === "paper" && computer === "rock") ||
-    (user === "scissors" && computer === "paper")
+    (player === "rock" && computer === "scissors") ||
+    (player === "paper" && computer === "rock") ||
+    (player === "scissors" && computer === "paper")
   ) {
     result += "🎉 You win!";
   } else {
     result += "💻 Computer wins!";
   }
 
-  document.getElementById("output").innerHTML = result;
+  document.getElementById("result").innerHTML = result;
 }
 </script>
 
 </body>
 </html>
-
 
