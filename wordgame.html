@@ -1,247 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Word Guessing Game</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Word Game</title>
 
   <style>
     body {
-      background: linear-gradient(135deg, #0f4c75, #3282b8);
-      color: white;
+      margin: 0;
       font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
       text-align: center;
-      padding-top: 40px;
     }
 
     h1 {
-      font-family: 'Pacifico', cursive;
-      font-size: 46px;
+      margin-top: 40px;
+      font-size: 36px;
     }
-
-    .mode-btn {
-      padding: 10px 20px;
-      font-size: 18px;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      margin: 5px;
-    }
-
-    .normal { background-color: #00eaff; }
-    .hard { background-color: #ff6b6b; }
-    .locked { opacity: 0.5; cursor: not-allowed; }
 
     #word {
-      font-size: 40px;
-      letter-spacing: 12px;
-      margin: 20px 0;
-    }
-
-    #info, #message {
-      font-size: 22px;
-      margin: 10px 0;
+      font-size: 32px;
+      letter-spacing: 5px;
+      margin: 20px;
     }
 
     input {
-      padding: 12px;
-      font-size: 26px;
-      width: 80px;
-      border-radius: 10px;
-      border: none;
+      padding: 10px;
+      font-size: 18px;
+      width: 50px;
       text-align: center;
     }
 
-    button.guess {
-      padding: 12px 22px;
-      font-size: 22px;
-      border-radius: 12px;
-      border: none;
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
       cursor: pointer;
-      background-color: #ffd166;
-      margin-left: 10px;
     }
 
-    #round, #score, #lives, #timer {
-      font-size: 24px;
-      margin-top: 10px;
-    }
-
-    #timer {
-      font-weight: bold;
-      color: #ffd166;
+    #info {
+      margin-top: 15px;
+      font-size: 18px;
     }
 
     a {
-      color: white;
-      text-decoration: none;
       display: block;
-      margin-top: 35px;
+      margin-top: 25px;
+      color: #7c7cff;
+      text-decoration: none;
+      font-size: 18px;
     }
   </style>
 </head>
-
 <body>
 
-<h1>🔤 WORD GUESSING GAME</h1>
+<h1 id="title">🧠 Word Game</h1>
 
-<div>
-  <button class="mode-btn normal" onclick="startGame('normal')">NORMAL</button>
-  <button id="hardBtn" class="mode-btn hard locked" onclick="startGame('hard')">
-    HARD 🔒
-  </button>
-</div>
-
-<div id="info"></div>
 <div id="word"></div>
-<div id="message"></div>
 
 <input id="guess" maxlength="1">
-<button class="guess" onclick="check()">GUESS</button>
+<button onclick="guessLetter()">Guess</button>
 
-<div id="round"></div>
-<div id="score"></div>
-<div id="lives"></div>
-<div id="timer"></div>
+<div id="info"></div>
 
-<a href="index.html">⬅️ Back to Home</a>
+<a href="index.html">⬅ Home</a>
 
 <script>
-/* ===== NAME REQUIRED ===== */
-if (!localStorage.getItem("playerName")) {
-  window.location.href = "index.html";
+/* LOAD USER NAME */
+const userData = localStorage.getItem("userData");
+if (userData) {
+  const user = JSON.parse(userData);
+  document.getElementById("title").innerText =
+    "🧠 Word Game – " + user.name;
 }
-const playerName = localStorage.getItem("playerName");
 
-/* ===== WORD DATA (UNCHANGED THEME SYSTEM) ===== */
-const words = [
-  {word:"pizza", theme:"Food", cuisine:"Italian"},
-  {word:"pasta", theme:"Food", cuisine:"Italian"},
-  {word:"lasagna", theme:"Food", cuisine:"Italian"},
-  {word:"burger", theme:"Food", cuisine:"American"},
-  {word:"sushi", theme:"Food", cuisine:"Japanese"},
-  {word:"taco", theme:"Food", cuisine:"Mexican"},
-  {word:"cheeseburger", theme:"Food", cuisine:"American"},
-  {word:"chickenparmesan", theme:"Food", cuisine:"Italian"},
-  {word:"fettuccinealfredo", theme:"Food", cuisine:"Italian"}
-];
+/* GAME DATA */
+const words = ["apple", "banana", "orange", "grapes", "mango"];
+let word = words[Math.floor(Math.random() * words.length)];
+let guessed = [];
+let lives = 6;
 
-const TIME_LIMIT = 30;
-let hardUnlocked = false;
-let mode = "normal";
-
-let pool, round, score, guessed, chosen, word;
-let lives, timer, timeLeft;
-
-/* ===== GAME START ===== */
-function startGame(selectedMode) {
-  if (selectedMode === "hard" && !hardUnlocked) {
-    document.getElementById("message").innerText =
-      "🔒 Beat Normal Mode to unlock Hard!";
-    return;
+/* DISPLAY WORD */
+function updateWord() {
+  let display = "";
+  for (let letter of word) {
+    display += guessed.includes(letter) ? letter + " " : "_ ";
   }
-
-  clearInterval(timer);
-  mode = selectedMode;
-
-  pool = mode === "hard"
-    ? words.filter(w => w.word.length >= 8)
-    : words.filter(w => w.word.length <= 7);
-
-  lives = mode === "hard" ? 4 : 6;
-  round = 1;
-  score = 0;
-
-  startRound();
+  document.getElementById("word").innerText = display.trim();
 }
 
-/* ===== ROUND ===== */
-function startRound() {
-  if (round > 3) return endGame();
+updateWord();
 
-  chosen = pool[Math.floor(Math.random() * pool.length)];
-  word = chosen.word;
-  guessed = [];
-  timeLeft = TIME_LIMIT;
+/* GUESS LETTER */
+function guessLetter() {
+  const input = document.getElementById("guess");
+  const letter = input.value.toLowerCase();
+  input.value = "";
 
-  document.getElementById("round").innerText = `Round: ${round}/3`;
-  document.getElementById("score").innerText = `Score: ${score}`;
-  document.getElementById("lives").innerText = `Lives: ${lives}`;
-  document.getElementById("info").innerText =
-    `Player: ${playerName} | Theme: ${chosen.theme} | Cuisine: ${chosen.cuisine}`;
-  document.getElementById("message").innerText = "";
-  document.getElementById("timer").innerText = `Time: ${timeLeft}`;
+  if (!letter || guessed.includes(letter)) return;
 
-  showWord();
-  startTimer();
-}
+  guessed.push(letter);
 
-/* ===== DISPLAY WORD ===== */
-function showWord() {
-  document.getElementById("word").innerText =
-    word.split("").map(l => guessed.includes(l) ? l : "_").join("");
-}
-
-/* ===== TIMER ===== */
-function startTimer() {
-  clearInterval(timer);
-  timer = setInterval(() => {
-    timeLeft--;
-    document.getElementById("timer").innerText = `Time: ${timeLeft}`;
-    if (timeLeft <= 0) loseRound("⏰ Time's up!");
-  }, 1000);
-}
-
-/* ===== GUESS ===== */
-function check() {
-  let g = document.getElementById("guess").value.toLowerCase();
-  document.getElementById("guess").value = "";
-  if (!g || guessed.includes(g)) return;
-
-  guessed.push(g);
-  if (!word.includes(g)) {
+  if (!word.includes(letter)) {
     lives--;
-    document.getElementById("lives").innerText = `Lives: ${lives}`;
-    if (lives <= 0) loseRound("😢 You lost!");
   }
 
-  showWord();
-  if (!document.getElementById("word").innerText.includes("_")) winRound();
-}
+  updateWord();
 
-/* ===== WIN / LOSE ===== */
-function winRound() {
-  clearInterval(timer);
-  score++;
-  round++;
-  setTimeout(startRound, 1500);
-}
-
-function loseRound(text) {
-  clearInterval(timer);
-  document.getElementById("message").innerText =
-    `${text} Word was: ${word}`;
-  round++;
-  setTimeout(startRound, 2000);
-}
-
-/* ===== END GAME ===== */
-function endGame() {
-  if (mode === "normal" && score === 3) {
-    hardUnlocked = true;
-    const btn = document.getElementById("hardBtn");
-    btn.classList.remove("locked");
-    btn.innerText = "HARD";
-    document.getElementById("message").innerText =
-      `🏆 Great job ${playerName}! Hard Mode Unlocked!`;
+  if (lives <= 0) {
+    document.getElementById("info").innerText =
+      "❌ Game Over! Word was: " + word;
+  } else if (word.split("").every(l => guessed.includes(l))) {
+    document.getElementById("info").innerText =
+      "🎉 You won!";
   } else {
-    document.getElementById("message").innerText =
-      `🏁 Game Over, ${playerName}! You won ${score}/3 rounds`;
+    document.getElementById("info").innerText =
+      "❤️ Lives left: " + lives;
   }
 }
-
-/* AUTO START NORMAL */
-startGame("normal");
 </script>
 
 </body>
