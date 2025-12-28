@@ -1,123 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Word Game</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: white;
-      text-align: center;
-    }
-
-    h1 {
-      margin-top: 40px;
-      font-size: 36px;
-    }
-
-    #word {
-      font-size: 32px;
-      letter-spacing: 5px;
-      margin: 20px;
-    }
-
-    input {
-      padding: 10px;
-      font-size: 18px;
-      width: 50px;
-      text-align: center;
-    }
-
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    #info {
-      margin-top: 15px;
-      font-size: 18px;
-    }
-
-    a {
-      display: block;
-      margin-top: 25px;
-      color: #7c7cff;
-      text-decoration: none;
-      font-size: 18px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Word Game</title>
+<style>
+body {
+  background:#222;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+}
+#word {
+  font-size:32px;
+  letter-spacing:8px;
+}
+#clue {
+  margin:15px;
+  font-size:18px;
+  color:#ffd700;
+}
+</style>
 </head>
+
 <body>
 
-<h1 id="title">🧠 Word Game</h1>
+<h1>🍽 Word Guess Game</h1>
 
-<div id="word"></div>
+<p id="clue"></p>
+<p>⏱ Time: <span id="time">60</span></p>
+<p id="word"></p>
+<p>❤️ Lives: <span id="lives"></span></p>
 
-<input id="guess" maxlength="1">
-<button onclick="guessLetter()">Guess</button>
-
-<div id="info"></div>
-
-<a href="index.html">⬅ Home</a>
+<input id="guess" maxlength="1" autofocus>
 
 <script>
-/* LOAD USER NAME */
-const userData = localStorage.getItem("userData");
-if (userData) {
-  const user = JSON.parse(userData);
-  document.getElementById("title").innerText =
-    "🧠 Word Game – " + user.name;
-}
+// ================= DIFFICULTY =================
+let difficulty = prompt("Choose difficulty: easy or hard", "easy");
+difficulty = difficulty === "hard" ? "hard" : "easy";
 
-/* GAME DATA */
-const words = ["apple", "banana", "orange", "grapes", "mango"];
-let word = words[Math.floor(Math.random() * words.length)];
-let guessed = [];
-let lives = 6;
+// ================= CUISINES =================
+const cuisines = {
+  Indian: ["DAL","ROTI","SAMOSA","BIRYANI","PANEER","DOSAI","IDLI"],
+  Italian: ["PASTA","PIZZA","RISOTTO","SPAGHETTI","LASAGNA","RAVIOLI"],
+  Japanese: ["SUSHI","RAMEN","TEMPURA","ONIGIRI","TAKOYAKI"],
+  Mexican: ["TACO","BURRITO","QUESADILLA","ENCHILADA","FAJITA"],
+  Chinese: ["NOODLES","DUMPLING","SPRINGROLL","FRIEDRICE","CHOWMEIN"],
+  French: ["BAGUETTE","CROISSANT","CREPE","RATATOUILLE","MACARON"],
+  Thai: ["PADTHAI","TOMYUM","CURRY","SATAY"],
+  American: ["BURGER","HOTDOG","PANCAKE","DONUT","BROWNIE"]
+};
 
-/* DISPLAY WORD */
-function updateWord() {
-  let display = "";
-  for (let letter of word) {
-    display += guessed.includes(letter) ? letter + " " : "_ ";
+// ================= PICK CUISINE + WORD =================
+const cuisineNames = Object.keys(cuisines);
+const chosenCuisine =
+  cuisineNames[Math.floor(Math.random() * cuisineNames.length)];
+
+let foodList = cuisines[chosenCuisine];
+
+// filter words by difficulty
+foodList = foodList.filter(w =>
+  difficulty === "easy" ? w.length <= 6 : w.length > 6
+);
+
+const word =
+  foodList[Math.floor(Math.random() * foodList.length)];
+
+let display = Array(word.length).fill("_");
+let lives = difficulty === "easy" ? 6 : 3;
+
+// ================= SHOW INFO =================
+document.getElementById("clue").innerText =
+  "Clue: This food is from " + chosenCuisine + " cuisine (" + difficulty + ")";
+
+document.getElementById("word").innerText = display.join(" ");
+document.getElementById("lives").innerText = lives;
+
+// ================= TIMER =================
+let time = 60;
+const timer = setInterval(() => {
+  time--;
+  document.getElementById("time").innerText = time;
+
+  if (time <= 0) {
+    clearInterval(timer);
+    alert("⏰ Time's up! The word was " + word);
+    location.reload();
   }
-  document.getElementById("word").innerText = display.trim();
-}
+}, 1000);
 
-updateWord();
+// ================= INPUT =================
+document.getElementById("guess").addEventListener("keyup", e => {
+  let letter = e.target.value.toUpperCase();
+  e.target.value = "";
 
-/* GUESS LETTER */
-function guessLetter() {
-  const input = document.getElementById("guess");
-  const letter = input.value.toLowerCase();
-  input.value = "";
+  if (!letter.match(/[A-Z]/)) return;
 
-  if (!letter || guessed.includes(letter)) return;
-
-  guessed.push(letter);
-
-  if (!word.includes(letter)) {
+  if (word.includes(letter)) {
+    for (let i = 0; i < word.length; i++) {
+      if (word[i] === letter) display[i] = letter;
+    }
+  } else {
     lives--;
   }
 
-  updateWord();
+  document.getElementById("word").innerText = display.join(" ");
+  document.getElementById("lives").innerText = lives;
+
+  if (!display.includes("_")) {
+    clearInterval(timer);
+    alert("🎉 You Win! The word was " + word);
+    location.reload();
+  }
 
   if (lives <= 0) {
-    document.getElementById("info").innerText =
-      "❌ Game Over! Word was: " + word;
-  } else if (word.split("").every(l => guessed.includes(l))) {
-    document.getElementById("info").innerText =
-      "🎉 You won!";
-  } else {
-    document.getElementById("info").innerText =
-      "❤️ Lives left: " + lives;
+    clearInterval(timer);
+    alert("💀 Game Over! The word was " + word);
+    location.reload();
   }
-}
+});
 </script>
 
 </body>
