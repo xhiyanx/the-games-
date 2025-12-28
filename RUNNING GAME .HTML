@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Classic Runner</title>
+<style>
+body {
+  margin: 0;
+  background: #0b1f2a;
+  font-family: Arial;
+  overflow: hidden;
+  color: white;
+}
+
+#ui {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}
+
+#game {
+  width: 420px;
+  height: 600px;
+  margin: 60px auto;
+  background: #111;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.lane {
+  position: absolute;
+  width: 4px;
+  height: 100%;
+  background: rgba(255,255,255,0.15);
+}
+#l1 { left: 140px; }
+#l2 { left: 280px; }
+
+#player {
+  width: 40px;
+  height: 60px;
+  background: black;
+  position: absolute;
+  bottom: 20px;
+  left: 190px;
+  border-radius: 10px;
+}
+#player::before {
+  content: "";
+  width: 25px;
+  height: 25px;
+  background: #222;
+  border-radius: 50%;
+  position: absolute;
+  top: -25px;
+  left: 7px;
+}
+.shield {
+  box-shadow: 0 0 15px 6px cyan;
+}
+
+.hurdle {
+  width: 60px;
+  height: 18px;
+  background: red;
+  position: absolute;
+  border-radius: 4px;
+}
+
+.coin {
+  width: 18px;
+  height: 18px;
+  background: gold;
+  border-radius: 50%;
+  position: absolute;
+}
+
+#gameOver {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 32px;
+}
+#gameOver button {
+  padding: 10px 20px;
+  font-size: 18px;
+}
+</style>
+</head>
+<body>
+
+<div id="ui">
+  Score: <b id="score">0</b> |
+  🪙 <b id="coins">0</b> |
+  <b id="shieldStatus">No Shield</b>
+</div>
+
+<div id="game">
+  <div class="lane" id="l1"></div>
+  <div class="lane" id="l2"></div>
+
+  <div id="player"></div>
+
+  <div id="gameOver">
+    GAME OVER
+    <button onclick="location.reload()">Restart</button>
+  </div>
+</div>
+
+<script>
+const game = document.getElementById("game");
+const player = document.getElementById("player");
+const scoreEl = document.getElementById("score");
+const coinsEl = document.getElementById("coins");
+const shieldStatus = document.getElementById("shieldStatus");
+const gameOver = document.getElementById("gameOver");
+
+const lanesX = [50, 190, 330];
+let lane = 1;
+let speed = 4;
+let score = 0;
+let coins = 0;
+let running = true;
+
+let shieldStored = false;
+let shieldActive = false;
+
+function updatePlayer() {
+  player.style.left = lanesX[lane] + "px";
+}
+
+document.addEventListener("keydown", e => {
+  if (!running) return;
+
+  if (e.key === "ArrowLeft" && lane > 0) lane--;
+  if (e.key === "ArrowRight" && lane < 2) lane++;
+
+  if (e.code === "Space" && shieldStored && !shieldActive) {
+    shieldActive = true;
+    shieldStored = false;
+    player.classList.add("shield");
+    shieldStatus.textContent = "Shield ACTIVE";
+  }
+
+  updatePlayer();
+});
+
+function collide(a, b) {
+  const r1 = a.getBoundingClientRect();
+  const r2 = b.getBoundingClientRect();
+  return !(r1.bottom < r2.top || r1.top > r2.bottom || r1.right < r2.left || r1.left > r2.right);
+}
+
+/* SAFE SPAWN SYSTEM */
+function spawnWave() {
+  const safeLane = Math.floor(Math.random() * 3);
+
+  for (let i = 0; i < 3; i++) {
+    if (i !== safeLane && Math.random() < 0.9) {
+      const h = document.createElement("div");
+      h.className = "hurdle";
+      h.style.left = lanesX[i] + "px";
+      h.style.top = "-40px";
+      game.appendChild(h);
+    }
+  }
+
+  // coin in safe lane
+  const c = document.createElement("div");
+  c.className = "coin";
+  c.style.left = lanesX[safeLane] + 10 + "px";
+  c.style.top = "-80px";
+  game.appendChild(c);
+}
+
+setInterval(spawnWave, 900);
+
+function loop() {
+  if (!running) return;
+
+  score++;
+  scoreEl.textContent = score;
+
+  if (score % 500 === 0 && !shieldStored && !shieldActive) {
+    shieldStored = true;
+    shieldStatus.textContent = "Shield READY (SPACE)";
+  }
+
+  document.querySelectorAll(".hurdle, .coin").forEach(el => {
+    el.style.top = el.offsetTop + speed + "px";
+
+    if (collide(player, el)) {
+      if (el.className === "coin") {
+        coins++;
+        coinsEl.textContent = coins;
+        el.remove();
+      } else {
+        if (shieldActive) {
+          shieldActive = false;
+          player.classList.remove("shield");
+          shieldStatus.textContent = "No Shield";
+          el.remove();
+        } else {
+          endGame();
+        }
+      }
+    }
+
+    if (el.offsetTop > 650) el.remove();
+  });
+
+  requestAnimationFrame(loop);
+}
+
+function endGame() {
+  running = false;
+  gameOver.style.display = "flex";
+}
+
+updatePlayer();
+loop();
+</script>
+
+</body>
+</html>
