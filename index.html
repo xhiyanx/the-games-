@@ -1,11 +1,11 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
-  <title>My Game Website</title>
   <meta charset="UTF-8">
+  <title>My Games</title>
   <style>
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       background: #0b2c3d;
       color: white;
       text-align: center;
@@ -14,9 +14,9 @@
 
     .box {
       background: #123;
-      padding: 25px;
       width: 320px;
       margin: auto;
+      padding: 25px;
       border-radius: 10px;
     }
 
@@ -30,27 +30,27 @@
     button {
       background: #1abc9c;
       border: none;
-      cursor: pointer;
       border-radius: 6px;
+      cursor: pointer;
     }
 
     button:hover {
       background: #16a085;
     }
 
-    .menu a {
+    a {
       display: block;
+      width: 260px;
       margin: 15px auto;
-      padding: 15px;
-      width: 220px;
+      padding: 18px;
       background: #1abc9c;
       color: black;
       text-decoration: none;
-      font-size: 20px;
-      border-radius: 8px;
+      font-size: 22px;
+      border-radius: 10px;
     }
 
-    .menu a:hover {
+    a:hover {
       background: #16a085;
     }
   </style>
@@ -59,6 +59,7 @@
 
 <h1>🎮 Welcome</h1>
 
+<!-- FORM -->
 <div id="formBox" class="box">
   <h2>Enter Details</h2>
 
@@ -75,15 +76,17 @@
   <button onclick="submitForm()">Continue</button>
 </div>
 
-<div id="menu" class="menu" style="display:none;">
+<!-- MENU -->
+<div id="menu" style="display:none;">
   <h2>Hello <span id="playerName"></span> 👋</h2>
 
   <a href="wordgame.html">🍽 Word Game</a>
-  <a href="runner.html">🏃 Runner Game</a>
+  <a href="runner.html">🏃 Running Game</a>
+  <a href="rockpaper.html">✊ Rock Paper Scissors</a>
 </div>
 
 <script>
-/* ---- GOOGLE FORM CONFIG (DO NOT CHANGE IDS) ---- */
+/* ===== GOOGLE FORM CONFIG ===== */
 const FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSf518bxgr0f0YZqlpHAQrnd9jiA7H9XKWjQ8C5A4K6cxt0e2w/formResponse";
 
@@ -91,12 +94,12 @@ const NAME_ID = "entry.513640417";
 const AGE_ID = "entry.2138871177";
 const AVATAR_ID = "entry.519456585";
 
-/* ---- CHECK MEMORY ---- */
+/* ===== AUTO SKIP FORM IF SAVED ===== */
 if (localStorage.getItem("playerName")) {
   showMenu();
 }
 
-/* ---- SUBMIT ---- */
+/* ===== SUBMIT FORM ===== */
 function submitForm() {
   const name = document.getElementById("name").value;
   const age = document.getElementById("age").value;
@@ -112,7 +115,7 @@ function submitForm() {
   localStorage.setItem("playerAge", age);
   localStorage.setItem("playerAvatar", avatar);
 
-  // Send to Google Form (no redirect)
+  // Send to Google Form silently
   const data = new FormData();
   data.append(NAME_ID, name);
   data.append(AGE_ID, age);
@@ -127,7 +130,7 @@ function submitForm() {
   showMenu();
 }
 
-/* ---- SHOW MENU ---- */
+/* ===== SHOW MENU ===== */
 function showMenu() {
   document.getElementById("formBox").style.display = "none";
   document.getElementById("menu").style.display = "block";
@@ -138,143 +141,4 @@ function showMenu() {
 
 </body>
 </html>
-!DOCTYPE html>
-<html>
-<head>
-  <title>My Game Website</title>
-  <meta charset="UTF-8">
-  <style>
-    body {
-      font-family: Arial;
-      background: #0b2c3d;
-      color: white;
-      text-align: center;
-      padding-top: 80px;
-    }
 
-    .box {
-      background: #123;
-      padding: 25px;
-      width: 320px;
-      margin: auto;
-      border-radius: 10px;
-    }
-
-    input, select, button {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-      font-size: 16px;
-    }
-
-    button {
-      background: #1abc9c;
-      border: none;
-      cursor: pointer;
-      border-radius: 6px;
-    }
-
-    button:hover {
-      background: #16a085;
-    }
-
-    .menu a {
-      display: block;
-      margin: 15px auto;
-      padding: 15px;
-      width: 220px;
-      background: #1abc9c;
-      color: black;
-      text-decoration: none;
-      font-size: 20px;
-      border-radius: 8px;
-    }
-
-    .menu a:hover {
-      background: #16a085;
-    }
-  </style>
-</head>
-<body>
-
-<h1>🎮 Welcome</h1>
-
-<div id="formBox" class="box">
-  <h2>Enter Details</h2>
-
-  <input id="name" placeholder="Your Name" required>
-  <input id="age" type="number" placeholder="Your Age" required>
-
-  <select id="avatar">
-    <option value="😎">😎 Cool</option>
-    <option value="😀">😀 Happy</option>
-    <option value="🤖">🤖 Robot</option>
-    <option value="👾">👾 Gamer</option>
-  </select>
-
-  <button onclick="submitForm()">Continue</button>
-</div>
-
-<div id="menu" class="menu" style="display:none;">
-  <h2>Hello <span id="playerName"></span> 👋</h2>
-
-  <a href="wordgame.html">🍽 Word Game</a>
-  <a href="runner.html">🏃 Runner Game</a>
-</div>
-
-<script>
-/* ---- GOOGLE FORM CONFIG (DO NOT CHANGE IDS) ---- */
-const FORM_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLSf518bxgr0f0YZqlpHAQrnd9jiA7H9XKWjQ8C5A4K6cxt0e2w/formResponse";
-
-const NAME_ID = "entry.513640417";
-const AGE_ID = "entry.2138871177";
-const AVATAR_ID = "entry.519456585";
-
-/* ---- CHECK MEMORY ---- */
-if (localStorage.getItem("playerName")) {
-  showMenu();
-}
-
-/* ---- SUBMIT ---- */
-function submitForm() {
-  const name = document.getElementById("name").value;
-  const age = document.getElementById("age").value;
-  const avatar = document.getElementById("avatar").value;
-
-  if (!name || !age) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  // Save locally
-  localStorage.setItem("playerName", name);
-  localStorage.setItem("playerAge", age);
-  localStorage.setItem("playerAvatar", avatar);
-
-  // Send to Google Form (no redirect)
-  const data = new FormData();
-  data.append(NAME_ID, name);
-  data.append(AGE_ID, age);
-  data.append(AVATAR_ID, avatar);
-
-  fetch(FORM_URL, {
-    method: "POST",
-    mode: "no-cors",
-    body: data
-  });
-
-  showMenu();
-}
-
-/* ---- SHOW MENU ---- */
-function showMenu() {
-  document.getElementById("formBox").style.display = "none";
-  document.getElementById("menu").style.display = "block";
-  document.getElementById("playerName").textContent =
-    localStorage.getItem("playerName");
-}
-</script>
-
-</body>
-</html>
