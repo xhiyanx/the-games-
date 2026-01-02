@@ -21,7 +21,6 @@ body {
   color: white;
 }
 
-/* MAIN CARD */
 .card {
   background: rgba(255,255,255,0.12);
   backdrop-filter: blur(16px);
@@ -58,11 +57,7 @@ h2 {
   font-weight: bold;
 }
 
-.btn:active {
-  transform: scale(0.97);
-}
-
-/* POPUP */
+/* MODAL */
 .modal {
   position: fixed;
   inset: 0;
@@ -99,9 +94,8 @@ h2 {
 
 <body>
 
-<!-- MAIN -->
 <div class="card">
-  <h1>🎮 Welcome v1.0 </h1>
+  <h1>🎮 Welcome</h1>
   <h2 id="welcomeText">Loading...</h2>
 
   <button class="btn" onclick="go('wordgame.html')">🧠 Word Game</button>
@@ -114,9 +108,9 @@ h2 {
   <div class="modal-content">
     <h2>👋 Welcome Player</h2>
 
-    <input id="nameInput" placeholder="Your name" />
-    <input id="ageInput" type="number" placeholder="Your age" />
-    <input id="avatarInput" placeholder="Avatar (emoji 🙂)" />
+    <input id="nameInput" placeholder="Your name">
+    <input id="ageInput" type="number" placeholder="Your age">
+    <input id="avatarInput" placeholder="Avatar emoji 🙂">
 
     <button class="btn save-btn" onclick="saveUser()">Save</button>
   </div>
@@ -125,6 +119,12 @@ h2 {
 <script>
 const modal = document.getElementById("modal");
 const welcomeText = document.getElementById("welcomeText");
+
+// 🔴 GOOGLE FORM DETAILS (YOURS)
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSf518bxgr0f0YZqlpHAQrnd9jiA7H9XKWjQ8C5A4K6cxt0e2w/formResponse";
+const ENTRY_NAME = "entry.513640417";
+const ENTRY_AGE = "entry.2138871177";
+const ENTRY_AVATAR = "entry.519456585";
 
 function init() {
   const name = localStorage.getItem("playerName");
@@ -147,9 +147,22 @@ function saveUser() {
     return;
   }
 
+  // ✅ SAVE LOCALLY
   localStorage.setItem("playerName", name);
   localStorage.setItem("playerAge", age);
   localStorage.setItem("playerAvatar", avatar);
+
+  // ✅ SEND TO GOOGLE FORM
+  const formData = new FormData();
+  formData.append(ENTRY_NAME, name);
+  formData.append(ENTRY_AGE, age);
+  formData.append(ENTRY_AVATAR, avatar);
+
+  fetch(FORM_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: formData
+  });
 
   modal.style.display = "none";
   welcomeText.innerText = `Hello ${name} ${avatar} 👋`;
@@ -164,4 +177,3 @@ init();
 
 </body>
 </html>
-
