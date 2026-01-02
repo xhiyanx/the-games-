@@ -8,69 +8,66 @@
   <style>
     * {
       box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
     }
 
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      font-family: 'Segoe UI', Arial, sans-serif;
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding: 20px;
+      justify-content: center;
+      background: radial-gradient(circle at top, #1f3c4a, #081c26);
       color: white;
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(16px);
-      border-radius: 24px;
-      padding: 32px 24px;
-      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
       max-width: 420px;
       text-align: center;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.45);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     }
 
     h1 {
-      margin: 0 0 10px;
-      font-size: 32px;
+      margin: 0;
+      font-size: 28px;
     }
 
     h2 {
-      margin: 0 0 26px;
+      margin: 10px 0 25px;
       font-weight: normal;
-      opacity: 0.9;
       font-size: 18px;
+      opacity: 0.9;
     }
 
     .btn {
+      display: block;
       width: 100%;
       padding: 16px;
       margin: 12px 0;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #1de9b6, #00bcd4);
+      color: #00323a;
       font-size: 18px;
-      border: none;
-      border-radius: 16px;
-      cursor: pointer;
-      background: linear-gradient(135deg, #1de9b6, #1dc4e9);
-      color: #003344;
       font-weight: bold;
+      border: none;
+      cursor: pointer;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .btn:hover {
-      box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
     }
 
-    .btn:active {
-      transform: scale(0.97);
-    }
-
-    footer {
+    .note {
       margin-top: 18px;
-      font-size: 13px;
-      opacity: 0.75;
+      font-size: 14px;
+      opacity: 0.7;
     }
   </style>
 </head>
@@ -78,21 +75,38 @@
 <body>
   <div class="card">
     <h1>🎮 Welcome</h1>
-    <h2>Hello HDHD 👋</h2>
+    <h2 id="username">Hello 👋</h2>
 
-    <button class="btn" onclick="location.href='wordgame.html'">
+    <button class="btn" onclick="go('wordgame.html')">
       🧠 Word Game
     </button>
 
-    <button class="btn" onclick="location.href='runner.html'">
+    <button class="btn" onclick="go('runner.html')">
       🏃 Running Game
     </button>
 
-    <button class="btn" onclick="location.href='rockpaper.html'">
+    <button class="btn" onclick="go('rockpaper.html')">
       ✊ Rock Paper Scissors
     </button>
 
-    <footer>Select a game to start playing</footer>
+    <div class="note">Select a game to start playing</div>
   </div>
+
+  <script>
+    // Get saved name
+    const name = localStorage.getItem("playerName");
+
+    if (name && name.trim() !== "") {
+      document.getElementById("username").innerText =
+        "Hello " + name + " 👋";
+    } else {
+      document.getElementById("username").innerText =
+        "Hello Guest 👋";
+    }
+
+    function go(page) {
+      window.location.href = page;
+    }
+  </script>
 </body>
 </html>
