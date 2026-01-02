@@ -1,98 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>My Game Hub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Game Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #1e1e1e, #3a3a3a);
-      font-family: Arial, sans-serif;
-      color: white;
-      text-align: center;
-    }
+<style>
+  * {
+    box-sizing: border-box;
+  }
 
-    h1 {
-      margin-top: 30px;
-      font-size: 32px;
-    }
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
 
-    .container {
-      margin-top: 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-    }
+  .card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 40px 30px;
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    animation: fadeIn 1s ease;
+  }
 
-    a {
-      text-decoration: none;
-      width: 80%;
-      max-width: 300px;
-    }
+  h1 {
+    margin-bottom: 10px;
+    font-size: 32px;
+  }
 
-    button {
-      width: 100%;
-      padding: 18px;
-      font-size: 20px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      background: #ff9800;
-      color: black;
-      transition: transform 0.2s, background 0.2s;
-    }
+  h2 {
+    font-weight: normal;
+    opacity: 0.9;
+    margin-bottom: 30px;
+  }
 
-    button:hover {
-      transform: scale(1.05);
-      background: #ffc107;
-    }
+  .btn {
+    width: 100%;
+    padding: 18px;
+    margin: 12px 0;
+    font-size: 20px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #1de9b6, #1dc4e9);
+    color: #003344;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
 
-    .form-btn {
-      background: #4caf50;
-      color: white;
-    }
+  .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  }
 
-    .form-btn:hover {
-      background: #66bb6a;
-    }
+  footer {
+    margin-top: 20px;
+    font-size: 13px;
+    opacity: 0.7;
+  }
 
-    footer {
-      margin-top: 40px;
-      font-size: 14px;
-      opacity: 0.7;
-    }
-  </style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+</style>
 </head>
 
 <body>
 
-  <h1>🎮 My Game Hub</h1>
+<div class="card">
+  <h1>🎮 Welcome</h1>
+  <h2>Hello <b>HDHD</b> 👋</h2>
 
-  <div class="container">
-    <a href="wordgame.html">
-      <button>🧠 Word Game</button>
-    </a>
+  <!-- GAME SELECTION -->
+  <button class="btn" onclick="location.href='wordgame.html'">
+    🧠 Word Game
+  </button>
 
-    <a href="runner.html">
-      <button>🏃 Running Game</button>
-    </a>
+  <button class="btn" onclick="location.href='runner.html'">
+    🏃 Running Game
+  </button>
 
-    <a href="rockpaper.html">
-      <button>✊ Rock Paper Scissors</button>
-    </a>
-
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSf518bxgr0f0YZqlpHAQrnd9jiA7H9XKWjQ8C5A4K6cxt0e2w/viewform" target="_blank">
-      <button class="form-btn">📝 Sign In / Feedback</button>
-    </a>
-  </div>
+  <button class="btn" onclick="location.href='rockpaper.html'">
+    ✊ Rock Paper Scissors
+  </button>
 
   <footer>
-    Made with ❤️ | Works on phone & desktop
+    Select a game to start playing
   </footer>
+</div>
 
 </body>
 </html>
