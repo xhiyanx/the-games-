@@ -1,104 +1,173 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Game Hub</title>
+<title>Running Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  * {
-    box-sizing: border-box;
-  }
+body {
+  margin: 0;
+  background: #222;
+  color: white;
+  text-align: center;
+  font-family: Arial;
+}
 
-  body {
-    margin: 0;
-    height: 100vh;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    font-family: 'Segoe UI', Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-  }
+canvas {
+  background: #444;
+  display: block;
+  margin: auto;
+}
 
-  .card {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    padding: 40px 30px;
-    width: 90%;
-    max-width: 420px;
-    text-align: center;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    animation: fadeIn 1s ease;
-  }
+#ui {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  font-size: 18px;
+}
 
-  h1 {
-    margin-bottom: 10px;
-    font-size: 32px;
-  }
+#mobileControls {
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
 
-  h2 {
-    font-weight: normal;
-    opacity: 0.9;
-    margin-bottom: 30px;
-  }
-
-  .btn {
-    width: 100%;
-    padding: 18px;
-    margin: 12px 0;
-    font-size: 20px;
-    border: none;
-    border-radius: 14px;
-    cursor: pointer;
-    background: linear-gradient(135deg, #1de9b6, #1dc4e9);
-    color: #003344;
-    font-weight: bold;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-
-  .btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-  }
-
-  footer {
-    margin-top: 20px;
-    font-size: 13px;
-    opacity: 0.7;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-  }
+#mobileControls button {
+  width: 30%;
+  font-size: 20px;
+  padding: 15px;
+  border-radius: 10px;
+}
 </style>
 </head>
 
 <body>
 
-<div class="card">
-  <h1>🎮 Welcome</h1>
-  <h2>Hello <b>HDHD</b> 👋</h2>
-
-  <!-- GAME SELECTION -->
-  <button class="btn" onclick="location.href='wordgame.html'">
-    🧠 Word Game
-  </button>
-
-  <button class="btn" onclick="location.href='runner.html'">
-    🏃 Running Game
-  </button>
-
-  <button class="btn" onclick="location.href='rockpaper.html'">
-    ✊ Rock Paper Scissors
-  </button>
-
-  <footer>
-    Select a game to start playing
-  </footer>
+<div id="ui">
+  Coins: <span id="coins">0</span><br>
+  Shield: <span id="shield">1</span>
 </div>
+
+<canvas id="game" width="360" height="500"></canvas>
+
+<div id="mobileControls">
+  <button onclick="moveLeft()">⬅</button>
+  <button onclick="activateShield()">🛡</button>
+  <button onclick="moveRight()">➡</button>
+</div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let lane = 1; // 0 left, 1 middle, 2 right
+let speed = 3;
+let coins = 0;
+let shields = 1;
+let shieldActive = false;
+
+const player = { y: 420, size: 30 };
+
+let obstacles = [];
+let coinItems = [];
+
+function spawnRow() {
+  let freeLane = Math.floor(Math.random() * 3);
+  for (let i = 0; i < 3; i++) {
+    if (i !== freeLane) {
+      obstacles.push({ lane: i, y: -40 });
+    } else if (Math.random() < 0.7) {
+      coinItems.push({ lane: i, y: -40 });
+    }
+  }
+}
+
+setInterval(spawnRow, 1200);
+
+function moveLeft() {
+  if (lane > 0) lane--;
+}
+
+function moveRight() {
+  if (lane < 2) lane++;
+}
+
+function activateShield() {
+  if (shields > 0 && !shieldActive) {
+    shields--;
+    shieldActive = true;
+    setTimeout(() => shieldActive = false, 3000);
+    document.getElementById("shield").innerText = shields;
+  }
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") moveLeft();
+  if (e.key === "ArrowRight") moveRight();
+  if (e.key === " ") activateShield();
+});
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // lanes
+  for (let i = 1; i < 3; i++) {
+    ctx.fillStyle = "#555";
+    ctx.fillRect(i * 120, 0, 2, canvas.height);
+  }
+
+  // player
+  ctx.fillStyle = shieldActive ? "cyan" : "yellow";
+  ctx.fillRect(lane * 120 + 45, player.y, player.size, player.size);
+
+  // obstacles
+  ctx.fillStyle = "red";
+  obstacles.forEach(o => {
+    o.y += speed;
+    ctx.fillRect(o.lane * 120 + 45, o.y, 30, 30);
+
+    if (
+      o.lane === lane &&
+      o.y + 30 > player.y &&
+      o.y < player.y + 30
+    ) {
+      if (shieldActive) {
+        o.y = 1000;
+      } else {
+        alert("Game Over!");
+        location.reload();
+      }
+    }
+  });
+
+  // coins
+  ctx.fillStyle = "gold";
+  coinItems.forEach(c => {
+    c.y += speed;
+    ctx.beginPath();
+    ctx.arc(c.lane * 120 + 60, c.y + 15, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (
+      c.lane === lane &&
+      c.y + 20 > player.y &&
+      c.y < player.y + 30
+    ) {
+      coins++;
+      c.y = 1000;
+      document.getElementById("coins").innerText = coins;
+    }
+  });
+
+  speed += 0.0005;
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
 
 </body>
 </html>
