@@ -1,230 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Classic Runner</title>
-<style>
-body {
-  margin: 0;
-  background: #0b1f2a;
-  font-family: Arial;
-  overflow: hidden;
-  color: white;
-}
+  <meta charset="UTF-8">
+  <title>My Game Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-#ui {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 10;
-}
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #1e1e1e, #3a3a3a);
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+    }
 
-#game {
-  width: 420px;
-  height: 600px;
-  margin: 60px auto;
-  background: #111;
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-}
+    h1 {
+      margin-top: 30px;
+      font-size: 32px;
+    }
 
-.lane {
-  position: absolute;
-  width: 4px;
-  height: 100%;
-  background: rgba(255,255,255,0.15);
-}
-#l1 { left: 140px; }
-#l2 { left: 280px; }
+    .container {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
 
-#player {
-  width: 40px;
-  height: 60px;
-  background: black;
-  position: absolute;
-  bottom: 20px;
-  left: 190px;
-  border-radius: 10px;
-}
-#player::before {
-  content: "";
-  width: 25px;
-  height: 25px;
-  background: #222;
-  border-radius: 50%;
-  position: absolute;
-  top: -25px;
-  left: 7px;
-}
-.shield {
-  box-shadow: 0 0 15px 6px cyan;
-}
+    a {
+      text-decoration: none;
+      width: 80%;
+      max-width: 300px;
+    }
 
-.hurdle {
-  width: 60px;
-  height: 18px;
-  background: red;
-  position: absolute;
-  border-radius: 4px;
-}
+    button {
+      width: 100%;
+      padding: 18px;
+      font-size: 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #ff9800;
+      color: black;
+      transition: transform 0.2s, background 0.2s;
+    }
 
-.coin {
-  width: 18px;
-  height: 18px;
-  background: gold;
-  border-radius: 50%;
-  position: absolute;
-}
+    button:hover {
+      transform: scale(1.05);
+      background: #ffc107;
+    }
 
-#gameOver {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  font-size: 32px;
-}
-#gameOver button {
-  padding: 10px 20px;
-  font-size: 18px;
-}
-</style>
+    .form-btn {
+      background: #4caf50;
+      color: white;
+    }
+
+    .form-btn:hover {
+      background: #66bb6a;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+  </style>
 </head>
+
 <body>
 
-<div id="ui">
-  Score: <b id="score">0</b> |
-  🪙 <b id="coins">0</b> |
-  <b id="shieldStatus">No Shield</b>
-</div>
+  <h1>🎮 My Game Hub</h1>
 
-<div id="game">
-  <div class="lane" id="l1"></div>
-  <div class="lane" id="l2"></div>
+  <div class="container">
+    <a href="wordgame.html">
+      <button>🧠 Word Game</button>
+    </a>
 
-  <div id="player"></div>
+    <a href="runner.html">
+      <button>🏃 Running Game</button>
+    </a>
 
-  <div id="gameOver">
-    GAME OVER
-    <button onclick="location.reload()">Restart</button>
+    <a href="rockpaper.html">
+      <button>✊ Rock Paper Scissors</button>
+    </a>
+
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSf518bxgr0f0YZqlpHAQrnd9jiA7H9XKWjQ8C5A4K6cxt0e2w/viewform" target="_blank">
+      <button class="form-btn">📝 Sign In / Feedback</button>
+    </a>
   </div>
-</div>
 
-<script>
-const game = document.getElementById("game");
-const player = document.getElementById("player");
-const scoreEl = document.getElementById("score");
-const coinsEl = document.getElementById("coins");
-const shieldStatus = document.getElementById("shieldStatus");
-const gameOver = document.getElementById("gameOver");
-
-const lanesX = [50, 190, 330];
-let lane = 1;
-let speed = 4;
-let score = 0;
-let coins = 0;
-let running = true;
-
-let shieldStored = false;
-let shieldActive = false;
-
-function updatePlayer() {
-  player.style.left = lanesX[lane] + "px";
-}
-
-document.addEventListener("keydown", e => {
-  if (!running) return;
-
-  if (e.key === "ArrowLeft" && lane > 0) lane--;
-  if (e.key === "ArrowRight" && lane < 2) lane++;
-
-  if (e.code === "Space" && shieldStored && !shieldActive) {
-    shieldActive = true;
-    shieldStored = false;
-    player.classList.add("shield");
-    shieldStatus.textContent = "Shield ACTIVE";
-  }
-
-  updatePlayer();
-});
-
-function collide(a, b) {
-  const r1 = a.getBoundingClientRect();
-  const r2 = b.getBoundingClientRect();
-  return !(r1.bottom < r2.top || r1.top > r2.bottom || r1.right < r2.left || r1.left > r2.right);
-}
-
-/* SAFE SPAWN SYSTEM */
-function spawnWave() {
-  const safeLane = Math.floor(Math.random() * 3);
-
-  for (let i = 0; i < 3; i++) {
-    if (i !== safeLane && Math.random() < 0.9) {
-      const h = document.createElement("div");
-      h.className = "hurdle";
-      h.style.left = lanesX[i] + "px";
-      h.style.top = "-40px";
-      game.appendChild(h);
-    }
-  }
-
-  // coin in safe lane
-  const c = document.createElement("div");
-  c.className = "coin";
-  c.style.left = lanesX[safeLane] + 10 + "px";
-  c.style.top = "-80px";
-  game.appendChild(c);
-}
-
-setInterval(spawnWave, 900);
-
-function loop() {
-  if (!running) return;
-
-  score++;
-  scoreEl.textContent = score;
-
-  if (score % 500 === 0 && !shieldStored && !shieldActive) {
-    shieldStored = true;
-    shieldStatus.textContent = "Shield READY (SPACE)";
-  }
-
-  document.querySelectorAll(".hurdle, .coin").forEach(el => {
-    el.style.top = el.offsetTop + speed + "px";
-
-    if (collide(player, el)) {
-      if (el.className === "coin") {
-        coins++;
-        coinsEl.textContent = coins;
-        el.remove();
-      } else {
-        if (shieldActive) {
-          shieldActive = false;
-          player.classList.remove("shield");
-          shieldStatus.textContent = "No Shield";
-          el.remove();
-        } else {
-          endGame();
-        }
-      }
-    }
-
-    if (el.offsetTop > 650) el.remove();
-  });
-
-  requestAnimationFrame(loop);
-}
-
-function endGame() {
-  running = false;
-  gameOver.style.display = "flex";
-}
-
-updatePlayer();
-loop();
-</script>
+  <footer>
+    Made with ❤️ | Works on phone & desktop
+  </footer>
 
 </body>
 </html>
